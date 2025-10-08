@@ -26,26 +26,25 @@ func main() {
 		})
 	})
 
-	studioApi := r.Group("/studio/api")
-	{
-		studioApi.GET("/dbs/:db_name/collections", handlers.ListCollections)
-		studioApi.GET("/dbs/:db_name/collections/:collection_name/documents", handlers.ListDocuments)
-	}
-
 	api := r.Group("/api")
 	{
 		api.POST("/dbs", handlers.CreateDatabase)
 	}
 
-	dbs := r.Group("/api/dbs/:db_name")
+	dbsGroup := r.Group("/api/dbs/:db_name")
 	{
-		dbs.POST("/collections", handlers.CreateCollection)
-		collections := dbs.Group("/collections/:collection_name")
+		dbsGroup.GET("/collections", handlers.ListCollections)
+		dbsGroup.POST("/collections", handlers.CreateCollection)
+		dbsGroup.DELETE("/", handlers.DeleteDatabase)
+
+		collectionsGroup := dbsGroup.Group("/collections/:collection_name")
 		{
-			collections.POST("/documents", handlers.CreateDocument)
-			collections.GET("/documents/:document_id", handlers.ReadDocument)
-			collections.PUT("/documents/:document_id", handlers.UpdateDocument)
-			collections.DELETE("/documents/:document_id", handlers.DeleteDocument)
+			collectionsGroup.GET("/documents", handlers.ListDocuments)
+			collectionsGroup.POST("/documents", handlers.CreateDocument)
+			collectionsGroup.GET("/documents/:document_id", handlers.ReadDocument)
+			collectionsGroup.PUT("/documents/:document_id", handlers.UpdateDocument)
+			collectionsGroup.DELETE("/documents/:document_id", handlers.DeleteDocument)
+			collectionsGroup.DELETE("/", handlers.DeleteCollection)
 		}
 	}
 

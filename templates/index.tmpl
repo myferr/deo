@@ -64,8 +64,8 @@
             </div>
             <div id="databases-list" class="list-group list-group-flush mt-2">
                 {{range .Databases}}
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <span onclick="selectDatabase('{{.}}')">{{.}}</span>
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="selectDatabase('{{.}}')">
+                    <span>{{.}}</span>
                     <span class="delete-btn" onclick="deleteDatabase('{{.}}')">&#x2715;</span>
                 </div>
                 {{end}}
@@ -169,7 +169,7 @@
         const createDbBtn = document.getElementById('create-db-btn');
 
         const editorContainer = document.getElementById('jsoneditor');
-        const editor = new JSONEditor(editorContainer, { mode: 'code', theme: 'ace/theme/tomorrow_night' });
+        const editor = new JSONEditor(editorContainer, { mode: 'code' });
 
         let selectedDb = null;
         let selectedCollection = null;
@@ -210,7 +210,7 @@
 
         async function loadCollections() {
             if (!selectedDb) return;
-            const res = await api(`/studio/api/dbs/${selectedDb}/collections`);
+            const res = await api(`/api/dbs/${selectedDb}/collections`);
             collectionList.innerHTML = '';
             res.data.forEach(coll => {
                 const item = document.createElement('div');
@@ -241,7 +241,7 @@
 
         async function loadDocuments() {
             if (!selectedDb || !selectedCollection) return;
-            const res = await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`);
+            const res = await api(`/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`);
             docList.innerHTML = '';
             res.data.forEach(doc => {
                 const item = document.createElement('a');
@@ -272,13 +272,13 @@
             try {
                 const doc = editor.get();
                 if (selectedDocId) {
-                    await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
+                    await api(`/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(doc)
                     });
                 } else {
-                    await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`, {
+                    await api(`/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(doc)
@@ -292,7 +292,7 @@
         deleteDocBtn.addEventListener('click', async () => {
             if (!selectedDocId || !confirm('Are you sure you want to delete this document?')) return;
             try {
-                await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
+                await api(`/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
                     method: 'DELETE'
                 });
                 docModal.hide();
@@ -313,7 +313,7 @@
             }
 
             try {
-                await api(`/studio/api/dbs/${selectedDb}/collections`, {
+                await api(`/api/dbs/${selectedDb}/collections`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ collection_name: collectionName })
