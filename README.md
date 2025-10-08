@@ -1,8 +1,8 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./asset-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="./asset.png" />
-    <img alt="Project Logo" src="./asset.png" width="100" />
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/logo-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="./assets/logo.png" />
+    <img alt="Project Logo" src="./assets/logo.png" width="100" />
   </picture>
 
   <h3>A lightweight, Go-based open source document-oriented JSON database.</h3>
