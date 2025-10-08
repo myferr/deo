@@ -121,7 +121,11 @@ https://github.com/user-attachments/assets/bf61fd84-8498-4ca6-9376-10ef5dc9d32c
 ---
 
 # API Documentation
+
 **deo** relies upon a RESTful application programming interface (API) to interact with databases, collections, and documents. The same route can be called in different methods to perform various operations so to explain the API in a more detailed manner, read below for documentation.
+
+> [!NOTE]
+> Don't want to interact with RESTful APIs? [**deo** has libraries!](https://github.com/myferr/deo#libraries)
 
 ## Base URL
 `http://localhost:6741/api`
@@ -393,3 +397,14 @@ All API errors return a JSON object with `success: false` and a `message` field.
 *   **Error Responses:**
     *   `404 Not Found`: Document not found.
     *   `500 Internal Server Error`: Failed to delete document.
+
+---
+
+## Libraries
+
+**deo** has official libraries to provide a cleaner developer experience, letting you access the database through clean code and not web requests.
+
+[All official libraries are provided here.](https://github.com/myferr/deo/tree/main/packages)
+
+* JavaScript / TypeScript
+  * [deo-db](https://npmjs.com/package/deo-db)
