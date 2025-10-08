@@ -2,12 +2,15 @@ package main
 
 import (
 	"deo/handlers"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	api := r.Group("/api")
 	{
@@ -23,5 +26,15 @@ func main() {
 		}
 	}
 
-	r.Run()
+	fmt.Println("\033[1;34m" + `
+     __
+ ___/ /__ ___
+/ _  / -_) _ \
+\_,_/\__/\___/
+
+` + "\033[0m")
+
+	fmt.Println("\033[1;32mdeo (/'dioh/), is running on localhost:6741\033[0m")
+	fmt.Println("\033[1;36mlocal → http://localhost:6741\033[0m")
+	r.Run(":6741")
 }
