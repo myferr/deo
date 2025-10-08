@@ -10,8 +10,11 @@ RUN go build -o /deo
 
 FROM alpine:latest
 
+WORKDIR /app
+
 COPY --from=builder /deo /deo
+COPY --from=builder /app/templates /app/templates
 
 EXPOSE 6741
 
-CMD ["/deo"]
+CMD ["sh", "-c", "cd /app && /deo"]
