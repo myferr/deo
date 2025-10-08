@@ -1,0 +1,9 @@
+.git/
+.DS_Store
+
+_tests/
+assets/
+packages/
+
+images.sh
+README.md
