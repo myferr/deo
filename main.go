@@ -32,10 +32,15 @@ func main() {
 		studioApi.GET("/dbs/:db_name/collections/:collection_name/documents", handlers.ListDocuments)
 	}
 
-	api := r.Group("/dbs/:db_name")
+	api := r.Group("/api")
 	{
-		api.POST("/collections", handlers.CreateCollection)
-		collections := api.Group("/collections/:collection_name")
+		api.POST("/dbs", handlers.CreateDatabase)
+	}
+
+	dbs := r.Group("/api/dbs/:db_name")
+	{
+		dbs.POST("/collections", handlers.CreateCollection)
+		collections := dbs.Group("/collections/:collection_name")
 		{
 			collections.POST("/documents", handlers.CreateDocument)
 			collections.GET("/documents/:document_id", handlers.ReadDocument)

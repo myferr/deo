@@ -58,8 +58,11 @@
 
     <div class="main-content">
         <div class="sidebar col-md-2 p-3">
-            <h5>Databases</h5>
-            <div id="databases-list" class="list-group list-group-flush">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Databases</h5>
+                <button class="btn btn-sm btn-primary" id="create-db-btn">+</button>
+            </div>
+            <div id="databases-list" class="list-group list-group-flush mt-2">
                 {{range .Databases}}
                 <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <span onclick="selectDatabase('{{.}}')">{{.}}</span>
@@ -123,6 +126,24 @@
         </div>
     </div>
 
+    <div class="modal fade" id="db-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Database</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="db-name-input" placeholder="Database name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-db-btn">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.2/jsoneditor.min.js"></script>
     <script>
@@ -141,6 +162,11 @@
         const collectionModal = new bootstrap.Modal(document.getElementById('collection-modal'));
         const collectionNameInput = document.getElementById('collection-name-input');
         const saveCollectionBtn = document.getElementById('save-collection-btn');
+
+        const dbModal = new bootstrap.Modal(document.getElementById('db-modal'));
+        const dbNameInput = document.getElementById('db-name-input');
+        const saveDbBtn = document.getElementById('save-db-btn');
+        const createDbBtn = document.getElementById('create-db-btn');
 
         const editorContainer = document.getElementById('jsoneditor');
         const editor = new JSONEditor(editorContainer, { mode: 'code', theme: 'ace/theme/tomorrow_night' });
@@ -294,6 +320,29 @@
                 });
                 collectionModal.hide();
                 loadCollections();
+            } catch (e) {}
+        });
+
+        createDbBtn.addEventListener('click', () => {
+            dbNameInput.value = '';
+            dbModal.show();
+        });
+
+        saveDbBtn.addEventListener('click', async () => {
+            const dbName = dbNameInput.value.trim();
+            if (!dbName) {
+                alert('Database name cannot be empty.');
+                return;
+            }
+
+            try {
+                await api(`/api/dbs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ db_name: dbName })
+                });
+                dbModal.hide();
+                location.reload();
             } catch (e) {}
         });
 

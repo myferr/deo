@@ -38,6 +38,15 @@ func ListDatabases() ([]string, error) {
 	return dbs, nil
 }
 
+func CreateDatabase(dbName string) error {
+	deoPath, err := getDeoPath()
+	if err != nil {
+		return err
+	}
+	dbPath := filepath.Join(deoPath, dbName)
+	return os.MkdirAll(dbPath, 0755)
+}
+
 func ListCollections(dbName string) ([]string, error) {
 	deoPath, err := getDeoPath()
 	if err != nil {
