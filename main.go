@@ -26,20 +26,21 @@ func main() {
 		})
 	})
 
-	api := r.Group("/studio/api")
+	studioApi := r.Group("/studio/api")
 	{
-		dbs := api.Group("/dbs/:db_name")
+		studioApi.GET("/dbs/:db_name/collections", handlers.ListCollections)
+		studioApi.GET("/dbs/:db_name/collections/:collection_name/documents", handlers.ListDocuments)
+	}
+
+	api := r.Group("/dbs/:db_name")
+	{
+		api.POST("/collections", handlers.CreateCollection)
+		collections := api.Group("/collections/:collection_name")
 		{
-			dbs.GET("/collections", handlers.ListCollections)
-			dbs.POST("/collections", handlers.CreateCollection)
-			collections := dbs.Group("/collections/:collection_name")
-			{
-				collections.GET("/documents", handlers.ListDocuments)
-				collections.POST("/documents", handlers.CreateDocument)
-				collections.GET("/documents/:document_id", handlers.ReadDocument)
-				collections.PUT("/documents/:document_id", handlers.UpdateDocument)
-				collections.DELETE("/documents/:document_id", handlers.DeleteDocument)
-			}
+			collections.POST("/documents", handlers.CreateDocument)
+			collections.GET("/documents/:document_id", handlers.ReadDocument)
+			collections.PUT("/documents/:document_id", handlers.UpdateDocument)
+			collections.DELETE("/documents/:document_id", handlers.DeleteDocument)
 		}
 	}
 

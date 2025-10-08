@@ -142,3 +142,21 @@ func LoadDocument(dbName, collectionName, docID string) (map[string]interface{},
 	err = msgpack.Unmarshal(packedData, &data)
 	return data, err
 }
+
+func DeleteDatabase(dbName string) error {
+	deoPath, err := getDeoPath()
+	if err != nil {
+		return err
+	}
+	dbPath := filepath.Join(deoPath, dbName)
+	return os.RemoveAll(dbPath)
+}
+
+func DeleteCollection(dbName, collectionName string) error {
+	deoPath, err := getDeoPath()
+	if err != nil {
+		return err
+	}
+	collectionPath := filepath.Join(deoPath, dbName, collectionName)
+	return os.RemoveAll(collectionPath)
+}
