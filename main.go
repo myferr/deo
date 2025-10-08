@@ -29,6 +29,7 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.POST("/dbs", handlers.CreateDatabase)
+		api.GET("/dbs", handlers.ListDatabases)
 	}
 
 	dbsGroup := r.Group("/api/dbs/:db_name")
