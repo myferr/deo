@@ -72,3 +72,40 @@ localhost:6741   /api   /dbs   /{database_name}   /collections   /{collection_na
 │                └── API root
 └── Hostname + Port
 ```
+
+---
+
+## Using Docker
+
+Images:
+- [`myferr/deo`](https://hub.docker.com/r/myferr/deo)
+- [`ghcr.io/myferr/deo`](https://github.com/myferr/deo/pkgs/container/deo)
+
+[Tags](https://github.com/myferr/deo/tags)
+
+### Command line
+To run Deo in a Docker container, use the following command:
+
+```bash
+docker run -d -p 6741:6741 --name deo ghcr.io/myferr/deo:latest
+```
+
+> [!TIP]
+> `myferr/deo:latest` may not exist, so either don't specify a tag or use `ghcr.io/myferr/deo:latest`
+
+### Compose
+To run Deo in a Docker Compose setup, use the following configuration:
+
+```yaml
+services:
+  deo:
+    image: ghcr.io/myferr/deo:latest
+    ports:
+      - "6741:6741"
+```
+
+and then start the container:
+
+```bash
+docker-compose up -d
+```
