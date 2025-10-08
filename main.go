@@ -2,6 +2,7 @@ package main
 
 import (
 	"deo/handlers"
+	"deo/storage"
 	"fmt"
 	"net/http"
 
@@ -15,16 +16,25 @@ func main() {
 
 	r.LoadHTMLGlob("templates/*")
 
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{})
+	r.GET("/studio", func(c *gin.Context) {
+		dbs, err := storage.ListDatabases()
+		if err != nil {
+			dbs = []string{}
+		}
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"Databases": dbs,
+		})
 	})
 
-	api := r.Group("/api")
+	api := r.Group("/studio/api")
 	{
 		dbs := api.Group("/dbs/:db_name")
 		{
+			dbs.GET("/collections", handlers.ListCollections)
+			dbs.POST("/collections", handlers.CreateCollection)
 			collections := dbs.Group("/collections/:collection_name")
 			{
+				collections.GET("/documents", handlers.ListDocuments)
 				collections.POST("/documents", handlers.CreateDocument)
 				collections.GET("/documents/:document_id", handlers.ReadDocument)
 				collections.PUT("/documents/:document_id", handlers.UpdateDocument)
@@ -42,6 +52,6 @@ func main() {
 ` + "\033[0m")
 
 	fmt.Println("\033[1;32mdeo (/'dioh/), is running on localhost:6741\033[0m")
-	fmt.Println("\033[1;36mlocal → http://localhost:6741\033[0m")
+	fmt.Println("\033[1;36mlocal → http://localhost:6741/studio\033[0m")
 	r.Run(":6741")
 }

@@ -1,9 +1,279 @@
 <!doctype html>
-<html>
-    <head>
-        <title>Deo</title>
-    </head>
-    <body>
-        <h1>Welcome to Deo!</h1>
-    </body>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deo Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.2/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .sidebar {
+            height: 100%;
+            overflow-y: auto;
+            border-right: 1px solid #495057;
+        }
+        .content {
+            flex-grow: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .list-group-item {
+            cursor: pointer;
+        }
+        #jsoneditor {
+            height: 500px;
+        }
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .list-group-item.active {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/studio">Deo Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="sidebar col-md-2 p-3">
+            <h5>Databases</h5>
+            <div id="databases-list" class="list-group list-group-flush">
+                {{range .Databases}}
+                <a class="list-group-item list-group-item-action" onclick="selectDatabase('{{.}}')">{{.}}</a>
+                {{end}}
+            </div>
+        </div>
+        <div class="sidebar col-md-2 p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Collections</h5>
+                <button class="btn btn-sm btn-primary" id="create-collection-btn" disabled>+</button>
+            </div>
+            <div id="collections-list" class="list-group list-group-flush mt-2">
+            </div>
+        </div>
+        <div class="content col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 id="documents-header">Documents</h4>
+                <button class="btn btn-primary" id="create-doc-btn" disabled>Create Document</button>
+            </div>
+            <div id="documents-list" class="list-group">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="document-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="document-modal-title">Create Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="jsoneditor"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger me-auto" id="delete-doc-btn">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-doc-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="collection-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Collection</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="collection-name-input" placeholder="Collection name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-collection-btn">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.2/jsoneditor.min.js"></script>
+    <script>
+        const dbList = document.getElementById('databases-list');
+        const collectionList = document.getElementById('collections-list');
+        const docList = document.getElementById('documents-list');
+        const createDocBtn = document.getElementById('create-doc-btn');
+        const createCollectionBtn = document.getElementById('create-collection-btn');
+        const documentsHeader = document.getElementById('documents-header');
+
+        const docModal = new bootstrap.Modal(document.getElementById('document-modal'));
+        const docModalTitle = document.getElementById('document-modal-title');
+        const saveDocBtn = document.getElementById('save-doc-btn');
+        const deleteDocBtn = document.getElementById('delete-doc-btn');
+
+        const collectionModal = new bootstrap.Modal(document.getElementById('collection-modal'));
+        const collectionNameInput = document.getElementById('collection-name-input');
+        const saveCollectionBtn = document.getElementById('save-collection-btn');
+
+        const editorContainer = document.getElementById('jsoneditor');
+        const editor = new JSONEditor(editorContainer, { mode: 'code', theme: 'ace/theme/tomorrow_night' });
+
+        let selectedDb = null;
+        let selectedCollection = null;
+        let selectedDocId = null;
+
+        async function api(url, options) {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+                throw new Error(error.message);
+            }
+            return response.json();
+        }
+
+        function selectDatabase(db) {
+            selectedDb = db;
+            selectedCollection = null;
+            collectionList.innerHTML = '';
+            docList.innerHTML = '';
+            createDocBtn.disabled = true;
+            createCollectionBtn.disabled = false;
+            documentsHeader.textContent = 'Documents';
+
+            Array.from(dbList.children).forEach(child => {
+                child.classList.toggle('active', child.textContent === db);
+            });
+            loadCollections();
+        }
+
+        async function loadCollections() {
+            if (!selectedDb) return;
+            const res = await api(`/studio/api/dbs/${selectedDb}/collections`);
+            collectionList.innerHTML = '';
+            res.data.forEach(coll => {
+                const item = document.createElement('a');
+                item.className = 'list-group-item list-group-item-action';
+                item.textContent = coll;
+                item.onclick = () => selectCollection(coll);
+                collectionList.appendChild(item);
+            });
+        }
+
+        function selectCollection(coll) {
+            selectedCollection = coll;
+            createDocBtn.disabled = false;
+            documentsHeader.textContent = `Documents in ${coll}`;
+
+            Array.from(collectionList.children).forEach(child => {
+                child.classList.toggle('active', child.textContent === coll);
+            });
+            loadDocuments();
+        }
+
+        async function loadDocuments() {
+            if (!selectedDb || !selectedCollection) return;
+            const res = await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`);
+            docList.innerHTML = '';
+            res.data.forEach(doc => {
+                const item = document.createElement('a');
+                item.className = 'list-group-item list-group-item-action';
+                item.textContent = doc._id;
+                item.onclick = () => openDocument(doc);
+                docList.appendChild(item);
+            });
+        }
+
+        function openDocument(doc) {
+            selectedDocId = doc._id;
+            docModalTitle.textContent = `Edit Document: ${selectedDocId}`;
+            editor.set(doc);
+            deleteDocBtn.style.display = 'block';
+            docModal.show();
+        }
+
+        createDocBtn.addEventListener('click', () => {
+            selectedDocId = null;
+            docModalTitle.textContent = 'Create Document';
+            editor.set({});
+            deleteDocBtn.style.display = 'none';
+            docModal.show();
+        });
+
+        saveDocBtn.addEventListener('click', async () => {
+            try {
+                const doc = editor.get();
+                if (selectedDocId) {
+                    await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(doc)
+                    });
+                } else {
+                    await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(doc)
+                    });
+                }
+                docModal.hide();
+                loadDocuments();
+            } catch (e) {}
+        });
+
+        deleteDocBtn.addEventListener('click', async () => {
+            if (!selectedDocId || !confirm('Are you sure you want to delete this document?')) return;
+            try {
+                await api(`/studio/api/dbs/${selectedDb}/collections/${selectedCollection}/documents/${selectedDocId}`, {
+                    method: 'DELETE'
+                });
+                docModal.hide();
+                loadDocuments();
+            } catch (e) {}
+        });
+
+        createCollectionBtn.addEventListener('click', () => {
+            collectionNameInput.value = '';
+            collectionModal.show();
+        });
+
+        saveCollectionBtn.addEventListener('click', async () => {
+            const collectionName = collectionNameInput.value.trim();
+            if (!collectionName) {
+                alert('Collection name cannot be empty.');
+                return;
+            }
+
+            try {
+                await api(`/studio/api/dbs/${selectedDb}/collections`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ collection_name: collectionName })
+                });
+                collectionModal.hide();
+                loadCollections();
+            } catch (e) {}
+        });
+
+    </script>
+</body>
 </html>
