@@ -107,5 +107,14 @@ services:
 and then start the container:
 
 ```bash
-docker-compose up -d
+docker-compose up -dv
 ```
+
+## Studio
+**deo** has a "studio" web UI to manage databases, collections, and documents which is useful for testing.
+Accessible at [`http://localhost:6741/studio`](http://localhost:6741/studio)
+
+### Demonstration
+
+https://github.com/user-attachments/assets/bf61fd84-8498-4ca6-9376-10ef5dc9d32c
+
