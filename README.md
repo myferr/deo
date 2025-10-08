@@ -10,7 +10,7 @@
 
 ---
 
-**deo** ([/'dioh/](https://ipa-reader.com/?text=%CB%88dioh), pronounced `dee-oh`) is a Go-based, open source document-oriented database that stores data as msgpack-compressed JSON files.  
+**deo** ([/'dioh/](https://ipa-reader.com/?text=%CB%88dioh), pronounced `dee-oh`) is a Go-based, open source document-oriented database that stores data as msgpack-compressed JSON files.
 It’s entirely accessed through a RESTful API, making it simple to integrate and easy to deploy as a single binary.
 
 ---
@@ -19,7 +19,7 @@ It’s entirely accessed through a RESTful API, making it simple to integrate an
 
 ### Create a document
 ```bash
-curl -X POST http://localhost:8080/api/dbs/my_db/collections/my_collection/documents \
+curl -X POST http://localhost:6741/api/dbs/my_db/collections/my_collection/documents \
   -H "Content-Type: application/json" \
   -d '{"name": "John Doe", "age": 30}'
 ```
@@ -27,13 +27,13 @@ curl -X POST http://localhost:8080/api/dbs/my_db/collections/my_collection/docum
 ### Read a document
 
 ```bash
-curl http://localhost:8080/api/dbs/my_db/collections/my_collection/documents/<document_id>
+curl http://localhost:6741/api/dbs/my_db/collections/my_collection/documents/<document_id>
 ```
 
 ### Update a document
 
 ```bash
-curl -X PUT http://localhost:8080/api/dbs/my_db/collections/my_collection/documents/<document_id> \
+curl -X PUT http://localhost:6741/api/dbs/my_db/collections/my_collection/documents/<document_id> \
   -H "Content-Type: application/json" \
   -d '{"name": "John Doe", "age": 31}'
 ```
@@ -41,7 +41,7 @@ curl -X PUT http://localhost:8080/api/dbs/my_db/collections/my_collection/docume
 ### Delete a document
 
 ```bash
-curl -X DELETE http://localhost:8080/api/dbs/my_db/collections/my_collection/documents/<document_id>
+curl -X DELETE http://localhost:6741/api/dbs/my_db/collections/my_collection/documents/<document_id>
 ```
 
 ---
@@ -62,7 +62,7 @@ $HOME/.deo/{database_name}/{collection_name}/*.msgpack
 ### RESTful API Structure
 
 ```
-localhost:8080   /api   /dbs   /{database_name}   /collections   /{collection_name}   /documents
+localhost:6741   /api   /dbs   /{database_name}   /collections   /{collection_name}   /documents
 │                │      │      │                  │              │                    │
 │                │      │      │                  │              │                    └── Documents endpoint
 │                │      │      │                  │              └── Collection name slug
