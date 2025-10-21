@@ -13,7 +13,7 @@ import (
 	"html/template"
 )
 
-//go:embed templates/*
+//go:embed templates/index.tmpl
 var templates embed.FS
 
 func main() {
@@ -21,8 +21,9 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
-	templ := template.Must(template.New("").ParseFS(templates, "templates/*"))
-	r.SetHTMLTemplate(templ)
+	// parse the embedded template
+	tmpl := template.Must(template.New("index.tmpl").ParseFS(templates, "templates/index.tmpl"))
+	r.SetHTMLTemplate(tmpl)
 
 	r.GET("/studio", func(c *gin.Context) {
 		dbs, err := storage.ListDatabases()
