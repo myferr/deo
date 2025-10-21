@@ -10,11 +10,11 @@
 
     // Bundler mode
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": false,
     "declaration": true,
     "rootDir": "src",
+    "outDir": "dist",
 
     // Best practices
     "strict": true,
@@ -28,6 +28,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src"],
+  "include": ["src", "README.md", "LICENSE"],
   "exclude": ["src/index.test.ts", "dist"]
 }

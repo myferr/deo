@@ -1,13 +1,12 @@
 {
-  "name": "deo-db",
-  "version": "0.0.6",
+  "name": "deo-client",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "bun build src/index.ts --outdir ./dist --target node",
-    "test": "bun test",
-    "start": "bun run example.ts"
+    "build": "tsc",
+    "test": "bun test"
   },
   "devDependencies": {
     "@types/bun": "latest"

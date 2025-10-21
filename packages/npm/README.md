@@ -1,4 +1,4 @@
-# deo-db
+# deo-client
 
 A powerful and lightweight TypeScript client for interacting with the DeoDB remote database service. This library provides a convenient and type-safe way to manage databases, collections, and documents via a RESTful API.
 
@@ -51,10 +51,10 @@ A powerful and lightweight TypeScript client for interacting with the DeoDB remo
 
 ## Installation
 
-To install `deo-db` in your Bun project, run the following command:
+To install `deo-client` in your Bun project, run the following command:
 
 ```bash
-bun add deo-db
+bun add deo-client
 ```
 
 ## Usage
@@ -64,7 +64,7 @@ bun add deo-db
 First, import `DeoClient` and initialize it, optionally specifying the host of your DeoDB server.
 
 ```typescript
-import { DeoClient } from 'deo-db';
+import { DeoClient } from 'deo-client';
 
 // Connect to the default host (http://localhost:6741)
 const client = new DeoClient();
@@ -77,7 +77,7 @@ console.log('DeoClient initialized.');
 Manage your databases on the DeoDB server.
 
 ```typescript
-import { DeoClient } from 'deo-db';
+import { DeoClient } from 'deo-client';
 
 const client = new DeoClient();
 
@@ -121,7 +121,7 @@ manageDatabases();
 Once you have a database, you can manage collections within it.
 
 ```typescript
-import { DeoClient } from 'deo-db';
+import { DeoClient } from 'deo-client';
 
 const client = new DeoClient();
 const dbName = 'myNewDatabase'; // Ensure this database exists
@@ -167,7 +167,7 @@ manageCollections();
 Perform CRUD operations on documents within a specific collection.
 
 ```typescript
-import { DeoClient } from 'deo-db';
+import { DeoClient } from 'deo-client';
 
 const client = new DeoClient();
 const dbName = 'myNewDatabase';
@@ -253,7 +253,7 @@ manageDocuments();
 The `DeoClient` methods return `DeoResponse` objects. If `success` is `false`, the `message` field will contain details about the error. Additionally, network errors or invalid JSON responses will throw a `DeoError`.
 
 ```typescript
-import { DeoClient, DeoError } from 'deo-db';
+import { DeoClient, DeoError } from 'deo-client';
 
 const client = new DeoClient('http://non-existent-host:1234'); // An invalid host to demonstrate error handling
 
