@@ -14,7 +14,7 @@
 It’s entirely accessed through a RESTful API, making it simple to integrate and easy to deploy as a single binary.
 
 ```
-go install github.com/deo/deo@latest
+go install github.com/myferr/deo@latest
 ```
 
 ---
