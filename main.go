@@ -8,14 +8,21 @@ import (
 	"github.com/myferr/deo/storage"
 
 	"github.com/gin-gonic/gin"
+
+	"embed"
+	"html/template"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 
-	r.LoadHTMLGlob("templates/*")
+	templ := template.Must(template.New("").ParseFS(templates, "templates/*"))
+	r.SetHTMLTemplate(templ)
 
 	r.GET("/studio", func(c *gin.Context) {
 		dbs, err := storage.ListDatabases()
