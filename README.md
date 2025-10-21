@@ -411,4 +411,4 @@ All API errors return a JSON object with `success: false` and a `message` field.
 [All official libraries are provided here.](https://github.com/myferr/deo/tree/main/packages)
 
 * JavaScript / TypeScript
-  * [deo-db](https://npmjs.com/package/deo-db)
+  * [deo-client](https://npmjs.com/package/deo-client)
