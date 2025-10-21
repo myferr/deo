@@ -88,7 +88,7 @@ class Collection {
     if (options.filters) {
       for (const key in options.filters) {
         if (Object.prototype.hasOwnProperty.call(options.filters, key)) {
-          params.append(`filter[${key}]`, options.filters[key]);
+          params.append(`filter[${key}]`, options.filters[key]!);
         }
       }
     }
