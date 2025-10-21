@@ -55,4 +55,41 @@ describe("DeoClient", () => {
     expect(listDocsResponse.success).toBe(true);
     expect(listDocsResponse.data?.some((d) => d._id === documentId)).toBeFalsy();
   });
+
+  it("should list documents with query parameters", async () => {
+    const queryCollectionName = "query_test_collection";
+    const collection = client.dbs[dbName].collections[queryCollectionName];
+    await client.dbs[dbName].createCollection(queryCollectionName);
+
+    await collection.createDocument({ name: "C doc", value: 30, group: "X" });
+    await collection.createDocument({ name: "A doc", value: 10, group: "Y" });
+    await collection.createDocument({ name: "B doc", value: 20, group: "X" });
+
+    // Test filtering
+    const filteredDocs = await collection.listDocuments({ filters: { group: "X" } });
+    expect(filteredDocs.success).toBe(true);
+    expect(filteredDocs.data).toHaveLength(2);
+    expect(filteredDocs.data?.every(d => d.group === "X")).toBe(true);
+
+    // Test sorting
+    const sortedDocs = await collection.listDocuments({ sortBy: "value", order: "asc" });
+    expect(sortedDocs.success).toBe(true);
+    expect(sortedDocs.data).toHaveLength(3);
+    expect(sortedDocs.data?.map(d => d.value)).toEqual([10, 20, 30]);
+
+    // Test pagination
+    const paginatedDocs = await collection.listDocuments({ sortBy: "value", order: "asc", limit: 1, offset: 1 });
+    expect(paginatedDocs.success).toBe(true);
+    expect(paginatedDocs.data).toHaveLength(1);
+    expect(paginatedDocs.data![0].value).toBe(20);
+
+    // Test combined query
+    const combined = await collection.listDocuments({ filters: { group: "X" }, sortBy: "value", order: "desc", limit: 1 });
+    expect(combined.success).toBe(true);
+    expect(combined.data).toHaveLength(1);
+    expect(combined.data![0].name).toBe("C doc");
+
+    // Cleanup
+    await client.dbs[dbName].deleteCollection(queryCollectionName);
+  });
 });

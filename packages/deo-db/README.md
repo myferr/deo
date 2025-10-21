@@ -222,6 +222,20 @@ async function manageDocuments() {
     console.error(`Failed to list documents: ${listDocsResponse.message}`);
   }
 
+  // List documents with options
+  const filteredAndSortedDocs = await usersCollection.listDocuments({
+    filters: { age: 30 },
+    sortBy: 'name',
+    order: 'asc',
+    limit: 10,
+  });
+
+  if (filteredAndSortedDocs.success) {
+    console.log('Filtered and sorted users:', filteredAndSortedDocs.data);
+  } else {
+    console.error(`Failed to list documents with options: ${filteredAndSortedDocs.message}`);
+  }
+
   // Delete a document
   const deleteDocResponse = await usersCollection.deleteDocument(userId);
   if (deleteDocResponse.success) {
@@ -344,10 +358,16 @@ Creates a new document in this collection.
 -   `document` (`T`): The document object to create. It will be assigned an `_id` by the server.
 -   Returns `Promise<DeoResponse<Document & T>>`: A promise that resolves with the API response, including the created document with its `_id`.
 
-#### `collection.listDocuments(): Promise<DeoResponse<Document[]>>`
+#### `collection.listDocuments(options?: ListDocumentsOptions): Promise<DeoResponse<Document[]>>`
 
-Lists all documents in this collection.
+Lists all documents in this collection, with optional filtering, sorting, and pagination.
 
+-   `options` (optional `ListDocumentsOptions`): An object to specify query parameters.
+    -   `filters` (optional `object`): A key-value object for filtering documents. Example: `{ field: 'value' }`.
+    -   `sortBy` (optional `string`): The field to sort by.
+    -   `order` (optional `'asc' | 'desc'`): The sort order. Defaults to `'asc'`.
+    -   `limit` (optional `number`): The maximum number of documents to return.
+    -   `offset` (optional `number`): The number of documents to skip.
 -   Returns `Promise<DeoResponse<Document[]>>`: A promise that resolves with the API response containing an array of documents.
 
 #### `collection.readDocument(documentId: string): Promise<DeoResponse<Document>>`

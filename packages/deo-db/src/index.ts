@@ -17,6 +17,14 @@ interface Document {
   [key: string]: any;
 }
 
+interface ListDocumentsOptions {
+  filters?: { [key: string]: string };
+  sortBy?: string;
+  order?: "asc" | "desc";
+  limit?: number;
+  offset?: number;
+}
+
 class DeoError extends Error {
   constructor(message: string) {
     super(message);
@@ -72,8 +80,40 @@ class Collection {
     });
   }
 
-  async listDocuments(): Promise<DeoResponse<Document[]>> {
-    return _fetch<Document[]>(`${this.baseUrl}/documents`);
+  async listDocuments(
+    options: ListDocumentsOptions = {},
+  ): Promise<DeoResponse<Document[]>> {
+    const params = new URLSearchParams();
+
+    if (options.filters) {
+      for (const key in options.filters) {
+        if (Object.prototype.hasOwnProperty.call(options.filters, key)) {
+          params.append(`filter[${key}]`, options.filters[key]);
+        }
+      }
+    }
+
+    if (options.sortBy) {
+      params.append("sort_by", options.sortBy);
+      if (options.order) {
+        params.append("order", options.order);
+      }
+    }
+
+    if (options.limit !== undefined) {
+      params.append("limit", String(options.limit));
+    }
+
+    if (options.offset !== undefined) {
+      params.append("offset", String(options.offset));
+    }
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `${this.baseUrl}/documents?${queryString}`
+      : `${this.baseUrl}/documents`;
+
+    return _fetch<Document[]>(url);
   }
 
   async readDocument(documentId: string): Promise<DeoResponse<Document>> {
