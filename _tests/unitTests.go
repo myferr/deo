@@ -1,10 +1,11 @@
 package main
 
 import (
-	"deo/storage"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/myferr/deo/storage"
 )
 
 // ANSI color codes

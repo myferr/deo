@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"deo/storage"
+	"github.com/myferr/deo/storage"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,4 +1,4 @@
-module deo
+module github.com/myferr/deo
 
 go 1.23.4
 

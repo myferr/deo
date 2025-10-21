@@ -1,10 +1,11 @@
 package main
 
 import (
-	"deo/handlers"
-	"deo/storage"
 	"fmt"
 	"net/http"
+
+	"github.com/myferr/deo/handlers"
+	"github.com/myferr/deo/storage"
 
 	"github.com/gin-gonic/gin"
 )

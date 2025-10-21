@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"deo/storage"
+	"github.com/myferr/deo/storage"
 
 	"github.com/gin-gonic/gin"
 )
