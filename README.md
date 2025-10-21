@@ -13,6 +13,10 @@
 **deo** ([/'dioh/](https://ipa-reader.com/?text=%CB%88dioh), pronounced `dee-oh`) is a Go-based, open source document-oriented database that stores data as msgpack-compressed JSON files.
 It’s entirely accessed through a RESTful API, making it simple to integrate and easy to deploy as a single binary.
 
+```
+go install github.com/deo/deo@latest
+```
+
 ---
 
 ## cURL Examples
